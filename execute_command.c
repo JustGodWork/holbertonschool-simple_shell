@@ -1,5 +1,12 @@
 #include "simple_shell.h"
 
+/**
+ * handle_pid_state - Handle pid state
+ * @pid: Process id
+ * @command: Command to execute
+ * @args: Arguments to pass to command
+ * Return: void
+*/
 void handle_pid_state(pid_t pid, char *command, char **args)
 {
 	int status;
@@ -8,19 +15,23 @@ void handle_pid_state(pid_t pid, char *command, char **args)
 		perror("Error: fork");
 		free(command);
 		exit(EXIT_FAILURE);
-	} else if (pid == 0)
+		return;
+	};
+	if (pid == 0)
 	{
 		execve(command, args, NULL);
 		perror("Error execve");
 		free(command);
 		exit(EXIT_FAILURE);
-	} else
-		wait(&status);
+		return;
+	};
+	wait(&status);
 }
 
 /**
  * execute_command - Executes a command
- * @args: An array of strings containing the command and its arguments
+ * @args: An array of strings containing
+ * the command and its arguments
  * Return: (0) on success, (-1) on fail
  */
 void execute_command(char **command)
@@ -39,13 +50,16 @@ void execute_command(char **command)
 	};
 
 	my_pid = fork();
-
 	handle = get_built_in_command(*command);
 
 	if (handle)
 	{
 		if (handle() == -1)
+		{
+			free(*command);
 			exit(EXIT_FAILURE);
+			return;
+		};
 		free(*command);
 		return;
 	};

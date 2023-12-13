@@ -8,6 +8,9 @@
 #include <unistd.h>
 #include <sys/wait.h>
 
+#define MAX_BUFFER_SIZE 1024
+
+/* Usage in get_built_in_command.c */
 typedef struct built_in_command
 {
 	char *name;

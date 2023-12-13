@@ -6,8 +6,8 @@
 */
 int main(void) {
 	/* char *program_name = argv[0]; */
-	char *command = malloc(1024 * sizeof(char));
-	size_t command_len = 1024;
+	char *command = malloc(MAX_BUFFER_SIZE * sizeof(char));
+	size_t command_len = MAX_BUFFER_SIZE;
 	int user_input = 0;
 
 	while (user_input != EOF) {
@@ -20,7 +20,10 @@ int main(void) {
 		execute_command(&command);
 
 		if (user_input == EOF)
+		{
+			free(command);
 			putchar('\n');
+		};
 	};
 
 	return (0);
