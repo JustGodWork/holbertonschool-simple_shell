@@ -18,5 +18,5 @@ int (*get_built_in_command(char *command))()
 		if (*command == *commands[i].name)
 			return (commands[i].handle);
 
-	return NULL;
+	return (NULL);
 }
