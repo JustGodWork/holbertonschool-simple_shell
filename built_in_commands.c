@@ -6,6 +6,7 @@
 */
 int built_in_exit(void)
 {
+	print_debug("[Info] built_in_exit() -> Exiting");
 	exit(EXIT_SUCCESS);
 	return (0);
 }
