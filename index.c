@@ -14,7 +14,7 @@ int main(int argc, char **argv, char **envp)
 	char *command = NULL;
 	size_t command_size = 0;
 	int user_input = 0;
-	int status = EXIT_SUCCESS;
+	int status;
 
 	(void)argc;
 
@@ -32,9 +32,11 @@ int main(int argc, char **argv, char **envp)
 			break;
 		command[user_input - 1] = '\0';
 		if (command[0] != '\0')
+		{
 			create_process(command, envp, program_name, &status);
-		if (status == EXIT_SUCCESS)
-			debug_free(command, "Clearing memory on success (main)");
+			if (WIFEXITED(status) && WEXITSTATUS(status) == EXIT_SUCCESS)
+				debug_free(command, "Clearing memory (main)");
+		};
 	};
 
 	return (EXIT_SUCCESS);

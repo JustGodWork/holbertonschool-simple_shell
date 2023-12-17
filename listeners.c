@@ -13,8 +13,8 @@ int eof_listener(int *user_input, int interactive, char *command)
 	{
 		if (interactive)
 			putchar('\n');
+		debug_free(command, "Clearing memory (eof_listener)");
 		exit(EXIT_SUCCESS);
-		debug_free(command, "Clearing memory on success (eof_listener)");
 		return (1);
 	};
 	return (0);

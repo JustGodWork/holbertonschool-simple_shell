@@ -23,23 +23,23 @@ void create_process(
 
 	if (child_pid == -1)
 	{
-		debug_free(command, "Clearing memory on failure (fork)");
-		printf("%s: fork: error\n", program_name);
-		*status = EXIT_FAILURE;
+		debug_free(command, "Clearing memory (create_process)");
+		perror(program_name);
+		exit(EXIT_FAILURE);
 		return;
-	}
-	else if (child_pid == 0)
+	};
+	if (child_pid == 0)
 	{
+		print_debug(DEBUG_INFO, "Trying execution of command: %s", command);
 		if (execve(command, args, envp) == -1)
 		{
-			debug_free(command, "Clearing memory on fail (execve)");
+			debug_free(command, "Clearing memory (create_process)");
+			error("Command failed");
 			perror(program_name);
 			exit(EXIT_FAILURE);
-			*status = EXIT_FAILURE;
 		};
-		*status = EXIT_SUCCESS;
+		info("Command executed successfully");
 		return;
-	}
-	else
-		wait(status);
+	};
+	wait(status);
 }

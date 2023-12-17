@@ -31,6 +31,7 @@ int print_debug(const char *type, const char *format, ...)
 */
 void debug_free(char *buffer, const char *message)
 {
+	(void)message;
 	print_debug(DEBUG_WARN, message ? message : "Freeing memory");
 	free(buffer);
 }
