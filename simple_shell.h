@@ -4,7 +4,7 @@
 #include "libraries.h"
 
 #define EXIT_CHILD 3 /* Exit status for child process */
-#define DEBUG 1 /* 0 = false, 1 = true */
+#define DEBUG 0 /* 0 = false, 1 = true */
 
 /* print_debug.c */
 int print_debug(const char *format, ...);
