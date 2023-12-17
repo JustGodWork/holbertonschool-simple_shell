@@ -3,11 +3,9 @@
 /**
  * exec_handler - Handle execve
  * @command: Command to execute
- * @args: Arguments to pass to command
- * @env: Environment variables
  * Return: (0) on success, (-1) on fail
 */
-int exec_handler(char *command, char **args, char **env)
+int exec_handler(char *command)
 {
 	int (*handle)();
 
@@ -32,27 +30,26 @@ int exec_handler(char *command, char **args, char **env)
 		free(command);
 		return (0);
 	};
+	return (-1);
 }
 
 /**
  * fork_success - Handle fork success
  * and execute command
- * @pid: Process ID
  * @program_name: Program name
  * @command: Command to execute
  * @args: Arguments to pass to command
  * @env: Environment variables
- * Return: (0) on success, (-1) on fail
+ * Return: void
  */
 void fork_success(
-	pid_t pid,
 	char *program_name,
 	char *command,
 	char **args,
 	char **env
 )
 {
-	if (exec_handler(command, args, env))
+	if (exec_handler(command))
 	{
 		print_debug("fork_success() -> Clearing memory 0");
 		free(command);
@@ -69,19 +66,17 @@ void fork_success(
 /**
  * fork_fail - Handle fork failure
  * and execute command
- * @pid: Process ID
  * @program_name: Program name
  * @command: Command to execute
  * Return: (0) on success, (-1) on fail
  */
-int fork_fail(pid_t pid, char *program_name, char *command)
+void fork_fail(char *program_name, char *command)
 {
 	print_debug("[Error] handle_pid_state() -> fork");
 	print_debug("handle_pid_state() -> Clearing memory");
 	free(command);
 	perror(program_name);
 	exit(EXIT_FAILURE);
-	return (-1);
 }
 
 /**
@@ -93,21 +88,27 @@ int fork_fail(pid_t pid, char *program_name, char *command)
  * @env: Environment variables
  * Return: void
  */
-int handle_command(char *program_name, int *status, char *command, char **env)
+void handle_command(char *program_name, int *status, char *command, char **env)
 {
 	pid_t pid = fork();
-	char *args[] = {command, NULL};
+	char *args[2];
+
+	args[0] = command;
+	args[1] = NULL;
 
 	print_debug("[Info] handle_command() -> pid: %d", pid);
 
 	if (pid == -1)
+	{
 		/* Handle fork failure */
-		return (fork_fail(pid, program_name, command));
+		fork_fail(program_name, command);
+		return;
+	}
 	else if (pid == 0)
 	{
 		/* Handle fork success */
-		fork_success(pid, program_name, command, args, env);
-		return (0);
+		fork_success(program_name, command, args, env);
+		return;
 	};
 	wait(status);
 }
@@ -121,7 +122,7 @@ int handle_command(char *program_name, int *status, char *command, char **env)
  * the command and its arguments
  * Return: (0) on success, (-1) on fail
  */
-int execute_command(
+void execute_command(
 	char **command,
 	char **envp,
 	int *status,
@@ -134,9 +135,9 @@ int execute_command(
 		print_debug("[Info] execute_command() -> Empty command");
 		print_debug("execute_command() -> Clearing memory");
 		free(*command);
-		return (0);
+		return;
 	};
 
 	/* Handle command execution */
-	return (handle_command(program_name, status, *command, envp));
+	handle_command(program_name, status, *command, envp);
 }
