@@ -49,7 +49,7 @@ void fork_success(
 	char **env
 )
 {
-	if (exec_handler(command))
+	if (exec_handler(command) == 0)
 	{
 		print_debug("fork_success() -> Clearing memory 0");
 		free(command);
@@ -59,8 +59,8 @@ void fork_success(
 		"[Info] fork_success() -> Executing command: %s",
 		command
 	);
-	if (execve(command, args, env) == -1)
-		perror(program_name);
+	execve(command, args, env);
+	perror(program_name);
 }
 
 /**
@@ -134,7 +134,6 @@ void execute_command(
 	{
 		print_debug("[Info] execute_command() -> Empty command");
 		print_debug("execute_command() -> Clearing memory");
-		free(*command);
 		return;
 	};
 
