@@ -36,15 +36,18 @@ void handle_exit(int status, char *command)
  * listen_for_eof - Listen for EOF (End of file)
  * @user_input: A pointer to the user input
  * @command: A pointer to the command
+ * @interactive: A flag to indicate if the shell is interactive
  * Return: void
  */
-void listen_for_eof(int user_input, char *command)
+void listen_for_eof(int user_input, char *command, int interactive)
 {
 	if (user_input == EOF)
 	{
 		print_debug("[Info] listen_for_eof() -> EOF detected");
 		print_debug("[Info] listen_for_eof() -> Clearing memory");
 		free(command);
+		if (interactive)
+			putchar('\n');
 		exit(EXIT_SUCCESS);
 	};
 }
@@ -66,9 +69,10 @@ void loop_listener(
 {
 	char *command = NULL;
 	size_t command_len = 0;
+	int interactive = isatty(STDIN_FILENO);
 
 	/* Print prompt if stdin is a terminal */
-	if (isatty(STDIN_FILENO))
+	if (interactive)
 		printf("%s", DEBUG ? "DEBUG$ " : "$ ");
 
 	/* Ensure immediate output */
@@ -78,7 +82,7 @@ void loop_listener(
 	*user_input = getline(&command, &command_len, stdin);
 
 	/* Handle EOF (End of file) */
-	listen_for_eof(*user_input, command);
+	listen_for_eof(*user_input, command, interactive);
 
 	print_debug("[Info] loop_listener() -> user_input: %d", *user_input);
 

@@ -59,8 +59,8 @@ void fork_success(
 		"[Info] fork_success() -> Executing command: %s",
 		command
 	);
-	execve(command, args, env);
-	perror(program_name);
+	if (execve(command, args, env) == -1)
+		perror(program_name);
 }
 
 /**
