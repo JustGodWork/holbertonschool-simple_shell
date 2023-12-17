@@ -12,14 +12,8 @@ int main(int argc, char **argv, char **envp)
 	char *program_name = argv[0];
 	int user_input = 0;
 	int status;
-	int i = 0;
 
 	(void)argc;
-	(void)argv;
-
-	if (DEBUG)
-		for (; envp[i]; i++)
-			printf("%s\n", envp[i]);
 
 	while (user_input != EOF)
 		/* Main process */

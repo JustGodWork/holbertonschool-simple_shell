@@ -49,6 +49,8 @@ void fork_success(
 	char **env
 )
 {
+	char *path;
+
 	if (exec_handler(command) == 0)
 	{
 		print_debug("fork_success() -> Clearing memory 0");
@@ -59,8 +61,14 @@ void fork_success(
 		"[Info] fork_success() -> Executing command: %s",
 		command
 	);
-	if (execve(command, args, env) == -1)
-		perror(program_name);
+	path = get_command_path(command);
+	if (path)
+	{
+		if (execve(path, args, env) == -1)
+			fprintf(stderr, "%s: %s\n", program_name, command);
+	}
+	else
+		printf("%s: %s not found\n", program_name, command);
 }
 
 /**
@@ -133,7 +141,6 @@ void execute_command(
 	if (*command[0] == '\0')
 	{
 		print_debug("[Info] execute_command() -> Empty command");
-		print_debug("execute_command() -> Clearing memory");
 		return;
 	};
 
