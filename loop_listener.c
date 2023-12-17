@@ -33,6 +33,23 @@ void handle_exit(int status, char *command)
 }
 
 /**
+ * listen_for_eof - Listen for EOF (End of file)
+ * @user_input: A pointer to the user input
+ * @command: A pointer to the command
+ * Return: void
+ */
+void listen_for_eof(int *user_input, char *command)
+{
+	if (*user_input == EOF)
+	{
+		print_debug("[Info] break_loop() -> EOF detected");
+		print_debug("[Info] break_loop() -> Clearing memory");
+		free(command);
+		exit(EXIT_SUCCESS);
+	};
+}
+
+/**
  * input_listener - Listen to user input
  * @user_input: A pointer to the user input
  * @status: A pointer to the status
@@ -61,27 +78,19 @@ void loop_listener(
 	*user_input = getline(&command, &command_len, stdin);
 
 	/* Handle EOF (End of file) */
-	if (*user_input == EOF)
+	listen_for_eof(user_input, command);
+
+	if (*user_input != EOF)
 	{
-		print_debug("[Info] main() -> EOF Exiting");
-		print_debug("[Info] main() -> Clearing memory");
-		free(command);
-		exit(EXIT_SUCCESS);
+		/* Delete newline character */
+		command[*user_input - 1] = '\0';
+
+		/* Execute command */
+		execute_command(&command, envp, status, program_name);
+
+		/* Handle child process exit */
+		handle_exit(*status, command);
+
+		print_debug("[Info] main() -> Waiting for child process end.");
 	};
-
-	/* Delete newline character */
-	command[strcspn(command, "\n")] = '\0';
-	/* Execute command */
-	if (execute_command(&command, envp, status, program_name) == -1)
-	{
-		print_debug("[Error] main() -> execute_command() failed");
-		print_debug("[Info] main() -> Clearing memory");
-		free(command);
-		exit(EXIT_FAILURE);
-	};
-
-	/* Handle child process exit */
-	handle_exit(*status, command);
-
-	print_debug("[Info] main() -> Waiting for child process end.");
 }

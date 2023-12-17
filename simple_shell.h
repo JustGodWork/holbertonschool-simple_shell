@@ -24,6 +24,6 @@ int built_in_exit();
 void loop_listener(int *user_input, int *status, char **envp, char *program_name);
 
 /* execute_command.c */
-int execute_command(char **command, char **envp, int *status, char *program_name);
+void execute_command(char **command, char **envp, int *status, char *program_name);
 
 #endif
