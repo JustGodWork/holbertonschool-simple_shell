@@ -2,14 +2,17 @@
 
 /**
  * exec_handler - Handle execve
- * @handle: Handle
  * @command: Command to execute
  * @args: Arguments to pass to command
  * @env: Environment variables
  * Return: (0) on success, (-1) on fail
 */
-int exec_handler(int (*handle)(), char *command, char **args, char **env)
+int exec_handler(char *command, char **args, char **env)
 {
+	int (*handle)();
+
+	handle = get_built_in_command(command);
+
 	if (handle)
 	{
 		print_debug("[Info] exec_handler() -> built-in command: %s", command);
@@ -19,52 +22,94 @@ int exec_handler(int (*handle)(), char *command, char **args, char **env)
 				"[Error] exec_handler() -> built-in command: %s",
 				command
 			);
+			print_debug("exec_handler() -> Clearing memory -1");
 			free(command);
 			exit(EXIT_FAILURE);
 			return (-1);
 		};
 		print_debug("[Success] exec_handler() -> built-in command: %s", command);
+		print_debug("exec_handler() -> Clearing memory 0");
 		free(command);
 		return (0);
 	};
 }
 
 /**
- * handle_pid_state - Handle pid state
- * @pid: Process id
+ * fork_success - Handle fork success
+ * and execute command
+ * @pid: Process ID
+ * @program_name: Program name
  * @command: Command to execute
  * @args: Arguments to pass to command
  * @env: Environment variables
- * Return: void
-*/
-void handle_pid_state(pid_t pid, int *status, char *command, char **args, char **env, int (*handle)())
+ * Return: (0) on success, (-1) on fail
+ */
+void fork_success(
+	pid_t pid,
+	char *program_name,
+	char *command,
+	char **args,
+	char **env
+)
 {
-	print_debug("[Info] handle_pid_state() -> pid: %d", pid);
+	if (exec_handler(command, args, env))
+	{
+		print_debug("fork_success() -> Clearing memory 0");
+		free(command);
+		return;
+	};
+	print_debug(
+		"[Info] fork_success() -> Executing command: %s",
+		command
+	);
+	if (execve(command, args, env) == -1)
+		perror(program_name);
+}
+
+/**
+ * fork_fail - Handle fork failure
+ * and execute command
+ * @pid: Process ID
+ * @program_name: Program name
+ * @command: Command to execute
+ * Return: (0) on success, (-1) on fail
+ */
+int fork_fail(pid_t pid, char *program_name, char *command)
+{
+	print_debug("[Error] handle_pid_state() -> fork");
+	print_debug("handle_pid_state() -> Clearing memory");
+	free(command);
+	perror(program_name);
+	exit(EXIT_FAILURE);
+	return (-1);
+}
+
+/**
+ * handle_command - Start child process
+ * and execute command
+ * @program_name: Program name
+ * @status: Status of the command
+ * @command: Command to execute
+ * @env: Environment variables
+ * Return: void
+ */
+int handle_command(char *program_name, int *status, char *command, char **env)
+{
+	pid_t pid = fork();
+	char *args[] = {command, NULL};
+
+	print_debug("[Info] handle_command() -> pid: %d", pid);
 
 	if (pid == -1)
+		/* Handle fork failure */
+		return (fork_fail(pid, program_name, command));
+	else if (pid == 0)
 	{
-		print_debug("[Error] handle_pid_state() -> fork");
-		perror("Error: fork");
-		free(command);
-		exit(EXIT_FAILURE);
-		return;
-	} else if (pid == 0)
-	{
-		if (exec_handler(handle, command, args, env))
-		{
-			free(command);
-			return;
-		};
-		print_debug(
-			"[Info] handle_pid_state() -> Executing command: %s",
-			command
-		);
-		execve(command, args, env);
-		perror("Error execve");
-		free(command);
-		return;
-	} else
-		wait(status);
+		/* Handle fork success */
+		fork_success(pid, program_name, command, args, env);
+		return (0);
+	};
+	wait(status);
 }
 
 /**
@@ -72,26 +117,26 @@ void handle_pid_state(pid_t pid, int *status, char *command, char **args, char *
  * @command: Command to execute
  * @envp: An array of strings containing each environment variable
  * @status: Status of the command
+ * @program_name: Program name
  * the command and its arguments
  * Return: (0) on success, (-1) on fail
  */
-void execute_command(char **command, char **envp, int *status)
+int execute_command(
+	char **command,
+	char **envp,
+	int *status,
+	char *program_name
+)
 {
-	pid_t my_pid;
-	char *args[2];
-	int (*handle)();
-
-	args[0] = *command;
-	args[1] = NULL;
-
+	/* Handle empty command */
 	if (*command[0] == '\0')
 	{
 		print_debug("[Info] execute_command() -> Empty command");
-		return;
+		print_debug("execute_command() -> Clearing memory");
+		free(*command);
+		return (0);
 	};
 
-	my_pid = fork();
-	handle = get_built_in_command(*command);
-
-	handle_pid_state(my_pid, status,*command, args, envp, handle);
+	/* Handle command execution */
+	return (handle_command(program_name, status, *command, envp));
 }

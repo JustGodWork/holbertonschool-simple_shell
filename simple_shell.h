@@ -1,16 +1,9 @@
 #ifndef SIMPLE_SHELL_H
 #define SIMPLE_SHELL_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdarg.h>
+#include "libraries.h"
 
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-
-#define MAX_BUFFER_SIZE 1024
+#define EXIT_CHILD 3 /* Exit status for child process */
 #define DEBUG 1 /* 0 = false, 1 = true */
 
 /* print_debug.c */
@@ -27,7 +20,10 @@ typedef struct built_in_command
 int (*get_built_in_command(char *command))();
 int built_in_exit();
 
+/* loop_listener.c */
+void loop_listener(int *user_input, int *status, char **envp, char *program_name);
+
 /* execute_command.c */
-void execute_command(char **command, char **envp, int *status);
+int execute_command(char **command, char **envp, int *status, char *program_name);
 
 #endif

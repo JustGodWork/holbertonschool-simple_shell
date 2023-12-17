@@ -15,7 +15,7 @@ int (*get_built_in_command(char *command))()
 	};
 
 	for (i = 0; commands[i].name != NULL; i++)
-		if (*command == *commands[i].name)
+		if (strcmp(command, commands[i].name) == 0)
 			return (commands[i].handle);
 
 	return (NULL);
