@@ -18,6 +18,12 @@ int is_path(char *command)
 	return (0);
 }
 
+/**
+ * scan_dir - Scan a directory for a command
+ * @command: The command to scan for
+ * Return: The full path of the command,
+ * or NULL if not found
+*/
 char *scan_dir(char *command)
 {
 	char *full_path;
@@ -43,19 +49,13 @@ char *scan_dir(char *command)
 
 		if (access(full_path, X_OK) == 0)
 		{
-			print_debug(
-				"[Success] -> scan_dir() -> full_path: %s",
-				full_path
-			);
+			print_debug("[Success] -> scan_dir()");
 			print_debug("[Info] -> scan_dir() -> Clearing memory 0");
 			free(path_copy);
 			return (strdup(full_path));
 		};
 
-		print_debug(
-			"[Warn] -> scan_dir() -> full_path: %s",
-			full_path
-		);
+		print_debug("[Warn] -> scan_dir() -> Searching for path...");
 		dir = strtok(NULL, ":");
 	};
 	print_debug("[Info] -> scan_dir() -> Clearing memory -1");
