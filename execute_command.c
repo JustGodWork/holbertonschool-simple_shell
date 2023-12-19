@@ -46,10 +46,10 @@ void fork_success(
 	char *program_name,
 	char *command,
 	char **args,
-	char **env
+	char **env,
+	char *path
 )
 {
-	char *path;
 
 	if (exec_handler(command) == 0)
 	{
@@ -61,17 +61,8 @@ void fork_success(
 		"[Info] fork_success() -> Executing command: %s",
 		command
 	);
-	path = get_command_path(command);
-	if (path)
-	{
-		if (execve(path, args, env) == -1)
-		{
-			printf("%s: %s: ", program_name, command);
-			perror("\n");
-		};
-	}
-	else
-		printf("%s: %s: command not found\n", program_name, command);
+	if (execve(path, args, env) == -1)
+		perror(program_name);
 }
 
 /**
@@ -106,9 +97,17 @@ void execute_command(
 	char *program_name
 )
 {
-	pid_t pid = fork();
+	pid_t pid;
 	char *args[2];
+	char *path = get_command_path(*command);
 
+	if (!path)
+	{
+		printf("%s: %s: command not found\n", program_name, *command);
+		return;
+	};
+
+	pid = fork();
 	args[0] = *command;
 	args[1] = NULL;
 
@@ -123,7 +122,7 @@ void execute_command(
 	else if (pid == 0)
 	{
 		/* Handle fork success */
-		fork_success(program_name, *command, args, envp);
+		fork_success(program_name, *command, args, envp, path);
 		return;
 	};
 	wait(status);
