@@ -1,6 +1,27 @@
 #include "simple_shell.h"
 
 /**
+ * _getenv - Get an environment variable
+ * @key: The name of the variable to get
+ * @envp: The environment variables
+ * Return: The value of the variable,
+ * or NULL if not found
+ */
+char *_getenv(const char *key, char **envp)
+{
+	int i = 0;
+	size_t key_length = strlen(key);
+
+	if (!key)
+		return (NULL);
+
+	for (i = 0; envp[i]; i++)
+		if (strncmp(envp[i], key, key_length) == 0)
+			return (envp[i] + key_length);
+	return (NULL);
+}
+
+/**
  * is_path - Check if a command is a path
  * @command: The command to check
  * Return: 1 if command is a path, 0 if not
@@ -21,13 +42,14 @@ int is_path(char *command)
 /**
  * scan_dir - Scan a directory for a command
  * @command: The command to scan for
+ * @envp: The environment variables
  * Return: The full path of the command,
  * or NULL if not found
 */
-char *scan_dir(char *command)
+char *scan_dir(char *command, char **envp)
 {
 	char *full_path;
-	char *path = getenv("PATH");
+	char *path = _getenv("PATH", envp);
 	char *path_copy = strdup(path);
 	char *dir = strtok(path_copy, ":");
 	int full_size;
@@ -67,10 +89,11 @@ char *scan_dir(char *command)
 /**
  * get_command_path - Get the full path of a command
  * @command: The command to get the full path of
+ * @envp: The environment variables
  * Return: The full path of the command,
  * or NULL if not found
  */
-char *get_command_path(char *command)
+char *get_command_path(char *command, char **envp)
 {
 	char *result;
 
@@ -82,7 +105,7 @@ char *get_command_path(char *command)
 		command
 	);
 
-	result = scan_dir(command);
+	result = scan_dir(command, envp);
 	if (result)
 		return (result);
 
