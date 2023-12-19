@@ -1,8 +1,8 @@
 #include "simple_shell.h"
 
 /**
- * print_debug - Print debug messages
- * with automatic new line
+ * print_debug - Print debug
+ * messages with automatic new line
  * @format: Format string
  * Return: (0) on success, (-1) on fail
  */

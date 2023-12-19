@@ -4,7 +4,7 @@
  * get_built_in_command - Get handle
  * associated with command name
  * @command: Command to find handle
- * Return: handle function
+ * Return: Handle function
  */
 int (*get_built_in_command(char *command))()
 {
