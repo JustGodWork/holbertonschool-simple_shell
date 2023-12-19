@@ -65,10 +65,13 @@ void fork_success(
 	if (path)
 	{
 		if (execve(path, args, env) == -1)
-			fprintf(stderr, "%s: %s\n", program_name, command);
+		{
+			printf("%s: %s: ", program_name, command);
+			perror("\n");
+		};
 	}
 	else
-		printf("%s: %s not found\n", program_name, command);
+		printf("%s: %s: command not found\n", program_name, command);
 }
 
 /**
@@ -88,40 +91,6 @@ void fork_fail(char *program_name, char *command)
 }
 
 /**
- * handle_command - Start child process
- * and execute command
- * @program_name: Program name
- * @status: Status of the command
- * @command: Command to execute
- * @env: Environment variables
- * Return: void
- */
-void handle_command(char *program_name, int *status, char *command, char **env)
-{
-	pid_t pid = fork();
-	char *args[2];
-
-	args[0] = command;
-	args[1] = NULL;
-
-	print_debug("[Info] handle_command() -> pid: %d", pid);
-
-	if (pid == -1)
-	{
-		/* Handle fork failure */
-		fork_fail(program_name, command);
-		return;
-	}
-	else if (pid == 0)
-	{
-		/* Handle fork success */
-		fork_success(program_name, command, args, env);
-		return;
-	};
-	wait(status);
-}
-
-/**
  * execute_command - Executes a command
  * @command: Command to execute
  * @envp: An array of strings containing each environment variable
@@ -137,13 +106,25 @@ void execute_command(
 	char *program_name
 )
 {
-	/* Handle empty command */
-	if (*command[0] == '\0')
+	pid_t pid = fork();
+	char *args[2];
+
+	args[0] = *command;
+	args[1] = NULL;
+
+	print_debug("[Info] handle_command() -> pid: %d", pid);
+
+	if (pid == -1)
 	{
-		print_debug("[Info] execute_command() -> Empty command");
+		/* Handle fork failure */
+		fork_fail(program_name, *command);
+		return;
+	}
+	else if (pid == 0)
+	{
+		/* Handle fork success */
+		fork_success(program_name, *command, args, envp);
 		return;
 	};
-
-	/* Handle command execution */
-	handle_command(program_name, status, *command, envp);
+	wait(status);
 }

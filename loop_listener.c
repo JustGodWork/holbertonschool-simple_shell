@@ -86,7 +86,7 @@ void loop_listener(
 
 	print_debug("[Info] loop_listener() -> user_input: %d", *user_input);
 
-	if (*user_input != EOF && command_len > 0)
+	if (*user_input != EOF && command[0] != '\n')
 	{
 		/* Delete newline character */
 		command[*user_input - 1] = '\0';
