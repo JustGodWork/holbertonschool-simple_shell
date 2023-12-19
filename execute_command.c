@@ -3,14 +3,11 @@
 /**
  * exec_handler - Handle execve
  * @command: Command to execute
+ * @handle: Handle to built-in command
  * Return: (0) on success, (-1) on fail
 */
-int exec_handler(char *command)
+int exec_handler(char *command, int (*handle)())
 {
-	int (*handle)();
-
-	handle = get_built_in_command(command);
-
 	if (handle)
 	{
 		print_debug("[Info] exec_handler() -> built-in command: %s", command);
@@ -40,6 +37,8 @@ int exec_handler(char *command)
  * @command: Command to execute
  * @args: Arguments to pass to command
  * @env: Environment variables
+ * @path: Path to command
+ * @handle: Handle to built-in command
  * Return: void
  */
 void fork_success(
@@ -47,14 +46,13 @@ void fork_success(
 	char *command,
 	char **args,
 	char **env,
-	char *path
+	char *path,
+	int (*handle)()
 )
 {
-
-	if (exec_handler(command) == 0)
+	if (exec_handler(command, handle) == 0)
 	{
-		print_debug("fork_success() -> Clearing memory 0");
-		free(command);
+		print_debug("process_checks() -> Not a built-in command");
 		return;
 	};
 	print_debug(
@@ -82,6 +80,28 @@ void fork_fail(char *program_name, char *command)
 }
 
 /**
+ * process_checks - Process checks
+ * @command: Command to execute
+ * @path: Path to command
+ * @program_name: Program name
+ * Return: (1) on success, (0) on fail
+ */
+int process_path_check(
+	char *command,
+	char **path,
+	char *program_name
+)
+{
+	*path = get_command_path(command);
+	if (!path)
+	{
+		printf("%s: %s: command not found\n", program_name, command);
+		return (0);
+	};
+	return (1);
+}
+
+/**
  * execute_command - Executes a command
  * @command: Command to execute
  * @envp: An array of strings containing each environment variable
@@ -99,9 +119,14 @@ void execute_command(
 {
 	pid_t pid;
 	char *args[2];
-	char *path = get_command_path(*command);
+	char *path;
+	int (*handle)(void);
 
-	if (!path)
+	handle = get_built_in_command(*command);
+	if (!handle)
+		process_path_check(*command, &path, program_name);
+
+	if (!path && !handle)
 	{
 		printf("%s: %s: command not found\n", program_name, *command);
 		return;
@@ -122,7 +147,7 @@ void execute_command(
 	else if (pid == 0)
 	{
 		/* Handle fork success */
-		fork_success(program_name, *command, args, envp, path);
+		fork_success(program_name, *command, args, envp, path, handle);
 		return;
 	};
 	wait(status);
