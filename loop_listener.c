@@ -15,6 +15,7 @@ void handle_exit(int status, char *command)
 	{
 		exit_status = WEXITSTATUS(status);
 
+		print_debug("Exit code: %d", exit_status);
 		/* Handle exit status */
 		if (exit_status != EXIT_SUCCESS)
 		{
@@ -37,9 +38,10 @@ void handle_exit(int status, char *command)
  * @user_input: A pointer to the user input
  * @command: A pointer to the command
  * @interactive: A flag to indicate if the shell is interactive
+ * @status: A pointer to the status
  * Return: void
  */
-void listen_for_eof(int user_input, char *command, int interactive)
+void listen_for_eof(int user_input, char *command, int interactive, int *status)
 {
 	if (user_input == EOF)
 	{
@@ -48,7 +50,10 @@ void listen_for_eof(int user_input, char *command, int interactive)
 		free(command);
 		if (interactive)
 			putchar('\n');
-		exit(EXIT_SUCCESS);
+		if (*status == EXIT_CMD_NOTFOUND)
+			exit(EXIT_CMD_NOTFOUND);
+		else
+			exit(EXIT_SUCCESS);
 	};
 }
 
@@ -82,7 +87,7 @@ void loop_listener(
 	*user_input = getline(&command, &command_len, stdin);
 
 	/* Handle EOF (End of file) */
-	listen_for_eof(*user_input, command, interactive);
+	listen_for_eof(*user_input, command, interactive, status);
 
 	print_debug("[Info] loop_listener() -> user_input: %d", *user_input);
 

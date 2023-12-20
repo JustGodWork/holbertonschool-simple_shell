@@ -2,21 +2,17 @@
 
 /**
  * _getenv - Get an environment variable
- * @key: The name of the variable to get
  * @envp: The environment variables
  * Return: The value of the variable,
  * or NULL if not found
  */
-char *_getenv(const char *key, char **envp)
+char *getpath(char **envp)
 {
 	int i = 0;
-	size_t key_length = strlen(key);
-
-	if (!key)
-		return (NULL);
+	size_t key_length = strlen("PATH=");
 
 	for (i = 0; envp[i]; i++)
-		if (strncmp(envp[i], key, key_length) == 0)
+		if (strncmp(envp[i], "PATH=", key_length) == 0)
 			return (envp[i] + key_length);
 	return (NULL);
 }
@@ -49,7 +45,7 @@ int is_path(char *command)
 char *scan_dir(char *command, char **envp)
 {
 	char *full_path;
-	char *path = _getenv("PATH", envp);
+	char *path = getpath(envp);
 	char *path_copy = strdup(path);
 	char *dir = strtok(path_copy, ":");
 	int full_size;

@@ -51,11 +51,8 @@ void fork_success(
 )
 {
 	print_debug("[Info] fork_success() -> Executing: %s", command);
-	if (exec_handler(command, handle) == 0)
-	{
-		print_debug("process_checks() -> Not a built-in command");
+	if (!exec_handler(command, handle))
 		return;
-	};
 	if (execve(path, args, env) == -1)
 		perror(program_name);
 }
@@ -74,30 +71,6 @@ void fork_fail(char *program_name, char *command)
 	free(command);
 	perror(program_name);
 	exit(EXIT_FAILURE);
-}
-
-/**
- * process_checks - Process checks
- * @command: Command to execute
- * @path: Path to command
- * @program_name: Program name
- * @envp: Environment variables
- * Return: (1) on success, (0) on fail
- */
-int process_path_check(
-	char *command,
-	char **path,
-	char *program_name,
-	char **envp
-)
-{
-	*path = get_command_path(command, envp);
-	if (!path)
-	{
-		printf("%s: %s: command not found\n", program_name, command);
-		return (0);
-	};
-	return (1);
 }
 
 /**
@@ -123,10 +96,11 @@ void execute_command(
 
 	handle = get_built_in_command(*command);
 	if (!handle)
-		process_path_check(*command, &path, program_name, envp);
+		path = get_command_path(*command, envp);
 
 	if (!path && !handle)
 	{
+		*status = EXIT_CMD_NOTFOUND;
 		printf("%s: %s: command not found\n", program_name, *command);
 		return;
 	};
@@ -149,5 +123,5 @@ void execute_command(
 		fork_success(program_name, *command, args, envp, path, handle);
 		return;
 	};
-	wait(status);
+	waitpid(pid, status, 0);
 }

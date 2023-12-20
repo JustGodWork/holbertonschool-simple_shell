@@ -3,7 +3,8 @@
 
 #include "libraries.h"
 
-#define EXIT_CHILD 3 /* Exit status for child process */
+#define EXIT_BUILT_IN 3 /* Exit status for built-in command */
+#define EXIT_CMD_NOTFOUND 127 /* Exit status for child process */
 #define DEBUG 1 /* 0 = false, 1 = true */
 
 /* print_debug.c */
