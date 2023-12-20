@@ -12,9 +12,24 @@
 /* GLOBAL ENVIRON */
 extern char **environ;
 
+/* STRUCTS */
+/**
+ * struct builtin - Struct builtin
+ * @name: Name of the builtin
+ * @handle: Function pointer to the builtin
+ */
+typedef struct builtin
+{
+	char *name;
+	int (*handle)(char **args, int status, char *input);
+} builtin_t;
+
 char **split_args(char *command);
 void free_args(char **args);
 int execute(char *command, char **args, char *program_name);
 char *clear_command(char *command);
+int is_path(char *command);
+char *scan_dir(char *command);
+int is_builtin(char **args, int status, char *input);
 
 #endif
