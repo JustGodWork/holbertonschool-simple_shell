@@ -25,7 +25,7 @@ void execute_command(char *command, char *program_name, int command_count)
 		/* Child process */
 		dinfo("Executing command: %s", command);
 		if (execve(command, args, environ) == -1)
-			perror(program_name), exit(EXIT_FAILURE);
+			perror(program_name), dfree(command), exit(EXIT_FAILURE);
 	}
 	else
 		/* Parent process */
