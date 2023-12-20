@@ -7,6 +7,6 @@
 int built_in_exit(void)
 {
 	print_debug("[Info] built_in_exit() -> Exiting program.");
-	exit(EXIT_CHILD);
+	exit(EXIT_BUILT_IN);
 	return (0);
 }
