@@ -41,7 +41,12 @@ void handle_exit(int status, char *command)
  * @status: A pointer to the status
  * Return: void
  */
-void listen_for_eof(int user_input, char *command, int interactive, int *status)
+void listen_for_eof(
+	int user_input,
+	char *command,
+	int interactive,
+	int *status
+)
 {
 	if (user_input == EOF)
 	{

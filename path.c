@@ -1,7 +1,7 @@
 #include "simple_shell.h"
 
 /**
- * _getenv - Get an environment variable
+ * getpath - Get path from environment variables
  * @envp: The environment variables
  * Return: The value of the variable,
  * or NULL if not found
