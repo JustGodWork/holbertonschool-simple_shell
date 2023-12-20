@@ -1,33 +1,52 @@
 #include "simple_shell.h"
 
 /**
- * execute_command - Execute command
- * @command: Command to execute
- * @program_name: Program name
- * @command_count: Command count
- * Return: void
+ * clear_command - Clear command
+ * @input: Input
+ * Return: Command without leading spaces
  */
-void execute_command(char *command, char *program_name, int command_count)
+char *clear_command(char *input)
+{
+	while (*input == ' ' || *input == '\t')
+		input++;
+	return (input);
+}
+
+/**
+ * execute - Execute a command
+ * @command: Command
+ * @args: Arguments
+ * @program_name: Program name
+ * Return: Exit status
+ */
+int execute(char *command, char **args, char *program_name)
 {
 	pid_t pid;
-	int status;
-	char *args[2];
+	int status = EXIT_SUCCESS;
 
 	pid = fork();
-	(void)command_count;
-
-	if (pid == -1)
-		dinfo("Fork invalid"), perror("fork"), exit(EXIT_FAILURE);
-	else if (pid == 0)
+	if (pid == 0)
 	{
-		args[0] = command;
-		args[1] = NULL;
-		/* Child process */
-		dinfo("Executing command: %s", command);
-		if (execve(command, args, environ) == -1)
-			perror(program_name), dfree(command), exit(EXIT_FAILURE);
+		if (execve(args[0], args, environ) == -1)
+		{
+			fprintf(
+				stderr,
+				"%s: %s: command not found\n",
+				program_name,
+				strtok(command, " ")
+			);
+			exit(EXIT_EXEC_FAILURE);
+		};
+		exit(EXIT_SUCCESS);
 	}
+	else if (pid < 0)
+		perror("fork failed.");
 	else
-		/* Parent process */
-		waitpid(pid, &status, 0);
+	{
+		wait(&status);
+		if (WIFEXITED(status))
+			status = WEXITSTATUS(status);
+	};
+
+	return (status);
 }
