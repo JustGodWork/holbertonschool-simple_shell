@@ -1,23 +1,68 @@
 #include "simple_shell.h"
 
 /**
+ * prompt - Print prompt
+ * @interactive: Interactive mode
+ * Return: void
+ */
+void prompt(int interactive)
+{
+	if (interactive)
+		printf("$ ");
+}
+
+/**
+ * listen_for_eof - Listen for EOF
+ * @bytes_read: Bytes read
+ * @program_name: Program name
+ * @interactive: Interactive mode
+ * Return: (0) on success, (1) on fail
+ */
+int listen_for_eof(ssize_t bytes_read, char *program_name, int interactive)
+{
+	if (bytes_read == EOF)
+	{
+		if (feof(stdin))
+		{
+			if (interactive)
+				putchar('\n');
+			fflush(stdout);
+			return (0);
+		};
+		perror(program_name);
+	};
+	return (1);
+}
+
+/**
  * main - Entry point
  * @argc: Number of arguments
  * @argv: An array of strings containing each argument
- * @envp: An array of strings containing each environment variable
  * Return: (0) always success
 */
-int main(int argc, char **argv, char **envp)
+int main(__attribute__((unused)) int argc, char **argv)
 {
+	ssize_t bytes_read = 0;
+	char *command = NULL;
+	int command_count = 0;
+	size_t command_size = 0;
 	char *program_name = argv[0];
-	int user_input = 0;
-	int status;
+	int interactive = isatty(STDIN_FILENO);
 
-	(void)argc;
+	while (bytes_read != EOF)
+	{
+		prompt(interactive);
+		bytes_read = getline(&command, &command_size, stdin);
+		if (!listen_for_eof(bytes_read, program_name, interactive))
+			break;
+		if (strcmp(command, "\n") == 0)
+			continue;
+		command[bytes_read - 1] = '\0';
+		/* if (strcmp(command, "exit") == 0) */
+		/*	break; */
+		execute_command(command, program_name, command_count);
+	};
 
-	while (user_input != EOF)
-		/* Main process */
-		loop_listener(&user_input, &status, envp, program_name);
-
+	dfree(command);
 	return (0);
 }
