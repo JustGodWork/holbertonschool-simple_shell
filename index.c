@@ -37,6 +37,26 @@ void listen_for_eof(
 }
 
 /**
+ * no_args - Check if args is NULL
+ * @args: Arguments
+ * @input: Command
+ * @program_name: Program name
+ * Return: 1 if success, 0 if failure
+ */
+int no_args(char **args, char *input, char *program_name)
+{
+	if (!args)
+	{
+		dinfo("Arguments invalid.");
+		free(input);
+		perror(program_name);
+		exit(EXIT_FAILURE);
+		return (1);
+	};
+	return (0);
+}
+
+/**
  * main - Entry point
  * @argc: Number of arguments
  * @argv: An array of strings containing each argument
@@ -58,52 +78,30 @@ int main(__attribute__((unused)) int argc, char **argv)
 	{
 		prompt(interactive);
 		bytes_read = getline(&input, &input_len, stdin);
-		dinfo("Receiving user input.");
 		listen_for_eof(bytes_read, input, interactive, status);
-		dinfo("No EOF detected.");
 		full_command = clear_command(input);
-		dinfo("Cleared command");
 		if (strcmp(full_command, "\n") == 0)
 			continue;
-		dinfo("Command is not a newline character.");
 		full_command[strlen(full_command) - 1] = '\0';
-		dinfo("Removing newline character.");
 		args = split_args(full_command);
-		dinfo("Splited args.");
-		if (!args)
-		{
-			dinfo("Args invalid.");
-			free(input);
-			perror(program_name);
-			exit(EXIT_FAILURE);
+		if (no_args(args, input, program_name))
 			break;
-		};
-		dinfo("Args valid.");
 		if (is_builtin(args, status, input))
 			continue;
-		dinfo("Not a builtin.");
-		dinfo("args[0]: %s", args[0]);
 		if (!is_path(args[0]))
 		{
 			tmp_command = args[0];
 			args[0] = scan_dir(args[0]);
 			free(tmp_command);
 		};
-		dinfo("Scanned dir.");
 		if (!args[0])
 		{
-			dinfo("Command not found.");
 			fprintf(stderr, "%s: %s: command not found\n", program_name, full_command);
 			status = EXIT_EXEC_FAILURE;
 		}
 		else
-		{
-			dinfo("Trying exec: %s", full_command);
 			status = execute(full_command, args, program_name);
-		};
-		dinfo("Freeing -----");
 		free_args(args);
 	};
-
 	return (0);
 }
