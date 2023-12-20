@@ -11,11 +11,14 @@ int dinfo(const char *format, ...)
 	va_list args;
 	int result = 0;
 
-	printf("[DEBUG] [Info] → ");
-	va_start(args, format);
-	result = vprintf(format, args);
-	va_end(args);
-	putchar('\n');
+	if (DEBUG)
+	{
+		printf("[DEBUG] [Info] → ");
+		va_start(args, format);
+		result = vprintf(format, args);
+		va_end(args);
+		putchar('\n');
+	};
 
 	return (result);
 }
@@ -31,11 +34,14 @@ int derror(const char *format, ...)
 	va_list args;
 	int result = 0;
 
-	printf("[DEBUG] [Error] → ");
-	va_start(args, format);
-	result = vprintf(format, args);
-	va_end(args);
-	putchar('\n');
+	if (DEBUG)
+	{
+		printf("[DEBUG] [Error] → ");
+		va_start(args, format);
+		result = vprintf(format, args);
+		va_end(args);
+		putchar('\n');
+	};
 
 	return (result);
 }
@@ -51,11 +57,14 @@ int dwarn(const char *format, ...)
 	va_list args;
 	int result = 0;
 
-	printf("[DEBUG] [Warn] → ");
-	va_start(args, format);
-	result = vprintf(format, args);
-	va_end(args);
-	putchar('\n');
+	if (DEBUG)
+	{
+		printf("[DEBUG] [Warn] → ");
+		va_start(args, format);
+		result = vprintf(format, args);
+		va_end(args);
+		putchar('\n');
+	};
 
 	return (result);
 }
@@ -71,11 +80,14 @@ int dsuccess(const char *format, ...)
 	va_list args;
 	int result = 0;
 
-	printf("[DEBUG] [Success] → ");
-	va_start(args, format);
-	result = vprintf(format, args);
-	va_end(args);
-	putchar('\n');
+	if (DEBUG)
+	{
+		printf("[DEBUG] [Success] → ");
+		va_start(args, format);
+		result = vprintf(format, args);
+		va_end(args);
+		putchar('\n');
+	};
 
 	return (result);
 }
