@@ -46,6 +46,7 @@ char **split_args(char *command)
 	{
 		perror("malloc");
 		exit(EXIT_FAILURE);
+		return (NULL);
 	};
 
 	dinfo("Arguments array address: %p", args);
@@ -64,6 +65,7 @@ char **split_args(char *command)
 		token = strtok(NULL, " ");
 	};
 	args[size] = NULL;
+	dinfo("Freeing tmp");
 	free(tmp);
 	return (args);
 }
@@ -79,8 +81,10 @@ void free_args(char **args)
 
 	while (args[i])
 	{
+		dinfo("Freeing args[%d]: %s", i, args[i]);
 		free(args[i]);
 		i++;
 	};
+	dinfo("Freeing args");
 	free(args);
 }

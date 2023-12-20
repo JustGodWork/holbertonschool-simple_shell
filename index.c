@@ -28,6 +28,7 @@ void listen_for_eof(
 {
 	if (bytes_read == EOF)
 	{
+		dinfo("EOF detected.");
 		free(command);
 		if (interactive)
 			putchar('\n');
@@ -45,32 +46,62 @@ int main(__attribute__((unused)) int argc, char **argv)
 {
 	ssize_t bytes_read = 0;
 	char *input = NULL;
-	char *command = NULL;
+	char *full_command = NULL;
+	char *tmp_command;
 	size_t input_len = 0;
 	char *program_name = argv[0];
 	int interactive = isatty(STDIN_FILENO);
-	char **args = NULL;
+	char **args;
 	int status = EXIT_SUCCESS;
 
 	while (bytes_read != EOF)
 	{
 		prompt(interactive);
 		bytes_read = getline(&input, &input_len, stdin);
-		dinfo("Input received: %s", input);
+		dinfo("Receiving user input.");
 		listen_for_eof(bytes_read, input, interactive, status);
-		command = clear_command(input);
-		dinfo("Command cleared: %s", command);
-		if (strcmp(command, "\n") == 0)
+		dinfo("No EOF detected.");
+		full_command = clear_command(input);
+		dinfo("Cleared command");
+		if (strcmp(full_command, "\n") == 0)
 			continue;
-		command[strlen(command) - 1] = '\0';
-		if (strcmp(command, "exit") == 0)
+		dinfo("Command is not a newline character.");
+		full_command[strlen(full_command) - 1] = '\0';
+		dinfo("Removing newline character.");
+		args = split_args(full_command);
+		dinfo("Splited args.");
+		if (!args)
 		{
+			dinfo("Args invalid.");
 			free(input);
+			perror(program_name);
+			exit(EXIT_FAILURE);
 			break;
 		};
-		dinfo("Trying exec: %s", command);
-		args = split_args(command);
-		status = execute(command, args, program_name);
+		dinfo("Args valid.");
+		if (is_builtin(args, status, input))
+			continue;
+		dinfo("Not a builtin.");
+		dinfo("args[0]: %s", args[0]);
+		if (!is_path(args[0]))
+		{
+			tmp_command = args[0];
+			args[0] = scan_dir(args[0]);
+			free(tmp_command);
+		};
+		dinfo("Scanned dir.");
+		if (!args[0])
+		{
+			dinfo("Command not found.");
+			fprintf(stderr, "%s: %s: command not found\n", program_name, full_command);
+			status = EXIT_EXEC_FAILURE;
+		}
+		else
+		{
+			dinfo("Trying exec: %s", full_command);
+			status = execute(full_command, args, program_name);
+		};
+		dinfo("Freeing -----");
 		free_args(args);
 	};
 
