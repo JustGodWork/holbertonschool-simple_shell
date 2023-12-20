@@ -49,11 +49,9 @@ char *scan_dir(char *command)
 
 	if (!path)
 		return (NULL);
-
 	path_copy = strdup(path);
 	dir = strtok(path_copy, ":");
 	dinfo("scan_dir(): dir: %s, command: %s", dir, command);
-
 	while (dir)
 	{
 		full_path = malloc(sizeof(char) * (strlen(dir) + strlen(command) + 2));
@@ -66,10 +64,8 @@ char *scan_dir(char *command)
 			exit(EXIT_FAILURE);
 			return (NULL);
 		};
-
 		sprintf(full_path, "%s/%s", dir, command);
 		dinfo("scan_dir(): full_path: %s", full_path);
-
 		if (access(full_path, X_OK) == 0)
 		{
 			dsuccess("scan_dir()");
@@ -77,12 +73,11 @@ char *scan_dir(char *command)
 			free(path_copy);
 			return (full_path);
 		};
-
 		dwarn("scan_dir(): Searching for path...");
 		dir = strtok(NULL, ":");
 		free(full_path);
 	};
-	dinfo("scan_dir(): Clearing memory -1");
+	dinfo("scan_dir(): Clearing memory 1");
 	free(path_copy);
 	return (NULL);
 }
