@@ -1,0 +1,10 @@
+{
+	"files.associations": {
+		"stdlib.h": "c",
+		"simple_shell.h": "c",
+		"string.h": "c",
+		"libraries.h": "c",
+		"process.h": "c",
+		"listeners.h": "c"
+	}
+}
