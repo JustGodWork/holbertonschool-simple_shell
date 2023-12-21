@@ -53,7 +53,7 @@ int is_builtin(char **args, int status, char *input, char **env)
 	int i = 0;
 	builtin_t builtins[] = {
 		{"exit", exit_builtin},
-		{"env", print_env},
+		/* {"env", print_env}, */
 		{NULL, NULL}
 	};
 
