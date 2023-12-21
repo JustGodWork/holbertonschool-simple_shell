@@ -5,10 +5,12 @@
  * @args: Arguments
  * @status: Exit status
  * @input: Command
+ * @env: Environment variables
  * Return: 1 if success, 0 if failure
  */
-int exit_builtin(char **args, int status, char *input)
+int exit_builtin(char **args, int status, char *input, char **env)
 {
+	(void)env;
 	if (args[1])
 		return (0);
 	free_args(args);
@@ -22,9 +24,10 @@ int exit_builtin(char **args, int status, char *input)
  * @args: Arguments
  * @status: Exit status
  * @input: Command
+ * @env: Environment variables
  * Return: 1 if success, 0 if failure
  */
-int print_env(char **args, int status, char *input)
+int print_env(char **args, int status, char *input, char **env)
 {
 	int i = 0;
 
@@ -32,8 +35,8 @@ int print_env(char **args, int status, char *input)
 	(void)status;
 	(void)input;
 
-	for (i = 0; environ[i]; i++)
-		printf("%s\n", environ[i]);
+	for (i = 0; env[i]; i++)
+		printf("%s\n", env[i]);
 	return (1);
 }
 
@@ -42,9 +45,10 @@ int print_env(char **args, int status, char *input)
  * @args: Arguments
  * @status: Exit status
  * @input: Command
+ * @env: Environment variables
  * Return: 1 if builtin, 0 if not
  */
-int is_builtin(char **args, int status, char *input)
+int is_builtin(char **args, int status, char *input, char **env)
 {
 	int i = 0;
 	builtin_t builtins[] = {
@@ -57,7 +61,7 @@ int is_builtin(char **args, int status, char *input)
 	{
 		if (strcmp(args[0], builtins[i].name) == 0)
 		{
-			return (builtins[i].handle(args, status, input));
+			return (builtins[i].handle(args, status, input, env));
 		};
 		i++;
 	};
