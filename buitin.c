@@ -32,11 +32,8 @@ int print_env(char **args, int status, char *input)
 	(void)status;
 	(void)input;
 
-	while (environ[i])
-	{
+	for (i = 0; environ[i]; i++)
 		printf("%s\n", environ[i]);
-		i++;
-	};
 	return (1);
 }
 
