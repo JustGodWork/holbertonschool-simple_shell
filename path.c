@@ -20,11 +20,10 @@ int is_path(char *command)
 
 /**
  * getpath - Get path from environment variables
- * @environ: Environment variables
  * Return: The value of the variable,
  * or NULL if not found
  */
-char *getpath(char **environ)
+char *getpath(void)
 {
 	int i = 0;
 	size_t key_length = strlen("PATH=");
@@ -38,14 +37,13 @@ char *getpath(char **environ)
 /**
  * scan_dir - Scan a directory for a command
  * @command: The command to scan for
- * @env: Environment variables
  * Return: The full path of the command,
  * or NULL if not found
 */
-char *scan_dir(char *command, char **env)
+char *scan_dir(char *command)
 {
 	char *full_path;
-	char *path = getpath(env);
+	char *path = getpath();
 	char *path_copy;
 	char *dir;
 
