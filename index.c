@@ -57,6 +57,19 @@ int no_args(char **args, char *input, char *program_name)
 }
 
 /**
+ * invalid_command - Print invalid command
+ * @full_command: Full command
+ * @program_name: Program name
+ * @status: Exit status pointer
+ * Return: void
+ */
+void invalid_command(char *full_command, char *program_name, int *status)
+{
+	fprintf(stderr, "%s: %s: command not found\n", program_name, full_command);
+	*status = EXIT_EXEC_FAILURE;
+}
+
+/**
  * main - Entry point
  * @argc: Number of arguments
  * @argv: An array of strings containing each argument
@@ -95,10 +108,7 @@ int main(__attribute__((unused)) int argc, char **argv)
 			free(tmp_command);
 		};
 		if (!args[0])
-		{
-			fprintf(stderr, "%s: %s: command not found\n", program_name, full_command);
-			status = EXIT_EXEC_FAILURE;
-		}
+			invalid_command(full_command, program_name, &status);
 		else
 			status = execute(full_command, args, program_name);
 		free_args(args);
