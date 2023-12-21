@@ -17,14 +17,12 @@ char *clear_command(char *input)
  * @command: Command
  * @args: Arguments
  * @program_name: Program name
- * @env: Environment variables
  * Return: Exit status
  */
 int execute(
 	char *command,
 	char **args,
-	char *program_name,
-	char **env
+	char *program_name
 )
 {
 	pid_t pid;
@@ -33,7 +31,7 @@ int execute(
 	pid = fork();
 	if (pid == 0)
 	{
-		if (execve(args[0], args, env) == -1)
+		if (execve(args[0], args, environ) == -1)
 		{
 			fprintf(
 				stderr,

@@ -73,15 +73,10 @@ void invalid_command(char *full_command, char *program_name, int *status)
  * main - Entry point
  * @argc: Number of arguments
  * @argv: An array of strings containing each argument
- * @envp: Environment variables
  * Description: A simple UNIX command interpreter.
  * Return: (0) always success
 */
-int main(
-	__attribute__((unused)) int argc,
-	char **argv,
-	char **envp
-)
+int main(__attribute__((unused)) int argc, char **argv)
 {
 	ssize_t bytes_read = 0;
 	char *input = NULL;
@@ -105,18 +100,18 @@ int main(
 		args = split_args(full_command);
 		if (no_args(args, input, program_name))
 			break;
-		if (is_builtin(args, status, input, envp))
+		if (is_builtin(args, status, input))
 			continue;
 		if (!is_path(args[0]))
 		{
 			tmp_command = args[0];
-			args[0] = scan_dir(args[0], envp);
+			args[0] = scan_dir(args[0]);
 			free(tmp_command);
 		};
 		if (!args[0])
 			invalid_command(full_command, program_name, &status);
 		else
-			status = execute(full_command, args, program_name, envp);
+			status = execute(full_command, args, program_name);
 		free_args(args);
 	};
 	return (0);
