@@ -17,6 +17,22 @@ int exit_builtin(char **args, int status, char *input)
 	return (1);
 }
 
+int print_env(char **args, int status, char *input)
+{
+	int i = 0;
+
+	(void)args;
+	(void)status;
+	(void)input;
+
+	while (environ[i])
+	{
+		printf("%s\n", environ[i]);
+		i++;
+	}
+	return (1);
+}
+
 /**
  * is_builtin - Check if command is a builtin
  * @args: Arguments
@@ -29,6 +45,7 @@ int is_builtin(char **args, int status, char *input)
 	int i = 0;
 	builtin_t builtins[] = {
 		{"exit", exit_builtin},
+		{"env", print_env},
 		{NULL, NULL}
 	};
 
