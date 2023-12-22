@@ -25,7 +25,12 @@ extern char **environ;
 /* PROTOTYPES */
 char **split_args(char *command);
 void free_args(char **args);
-int execute(char *command, char **args, char *program_name);
+int execute(
+	char *command,
+	char **args,
+	char *program_name,
+	int *command_count
+);
 char *clear_command(char *command);
 int is_path(char *command);
 char *scan_dir(char *command);

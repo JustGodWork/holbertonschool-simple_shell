@@ -61,11 +61,24 @@ int no_args(char **args, char *input, char *program_name)
  * @full_command: Full command
  * @program_name: Program name
  * @status: Exit status pointer
+ * @command_count: Command count pointer
  * Return: void
  */
-void invalid_command(char *full_command, char *program_name, int *status)
+void invalid_command(
+	char *full_command,
+	char *program_name,
+	int *status,
+	int *command_count
+)
 {
-	fprintf(stderr, "%s: %s: command not found\n", program_name, full_command);
+	(*command_count)++;
+	fprintf(
+		stderr,
+		"%s: %d: %s: command not found\n",
+		program_name,
+		*command_count,
+		full_command
+	);
 	*status = EXIT_EXEC_FAILURE;
 }
 
@@ -87,6 +100,7 @@ int main(__attribute__((unused)) int argc, char **argv)
 	int interactive = isatty(STDIN_FILENO);
 	char **args;
 	int status = EXIT_SUCCESS;
+	int command_count = 0;
 
 	while (bytes_read != EOF)
 	{
@@ -109,9 +123,9 @@ int main(__attribute__((unused)) int argc, char **argv)
 			free(tmp_command);
 		};
 		if (!args[0])
-			invalid_command(full_command, program_name, &status);
+			invalid_command(full_command, program_name, &status, &command_count);
 		else
-			status = execute(full_command, args, program_name);
+			status = execute(full_command, args, program_name, &command_count);
 		free_args(args);
 	};
 	return (0);
