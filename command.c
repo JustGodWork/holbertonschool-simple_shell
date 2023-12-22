@@ -44,7 +44,6 @@ int execute(
 			);
 			exit(EXIT_EXEC_FAILURE);
 		};
-		(*command_count)++;
 		exit(EXIT_SUCCESS);
 	}
 	else if (pid < 0)

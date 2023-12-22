@@ -71,14 +71,16 @@ void invalid_command(
 	int *command_count
 )
 {
-	(*command_count)++;
-	fprintf(
-		stderr,
-		"%s: %d: %s: command not found\n",
-		program_name,
-		*command_count,
-		full_command
-	);
+	(void)full_command;
+	(void)program_name;
+	(void)command_count;
+	/* fprintf( */
+	/*	stderr, */
+	/*	"%s: %d: %s: command not found\n", */
+	/*	program_name, */
+	/*	*command_count, */
+	/*	full_command */
+	/*); */
 	*status = EXIT_EXEC_FAILURE;
 }
 
@@ -105,6 +107,7 @@ int main(__attribute__((unused)) int argc, char **argv)
 	while (bytes_read != EOF)
 	{
 		prompt(interactive);
+		command_count++;
 		bytes_read = getline(&input, &input_len, stdin);
 		listen_for_eof(bytes_read, input, interactive, status);
 		full_command = clear_command(input);
@@ -120,7 +123,8 @@ int main(__attribute__((unused)) int argc, char **argv)
 		{
 			tmp_command = args[0];
 			args[0] = scan_dir(args[0]);
-			free(tmp_command);
+			if (strcmp(args[0], tmp_command) != 0)
+				free(tmp_command);
 		};
 		if (!args[0])
 			invalid_command(full_command, program_name, &status, &command_count);
