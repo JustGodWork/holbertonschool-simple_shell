@@ -74,13 +74,13 @@ void invalid_command(
 	(void)full_command;
 	(void)program_name;
 	(void)command_count;
-	/* fprintf( */
-	/*	stderr, */
-	/*	"%s: %d: %s: command not found\n", */
-	/*	program_name, */
-	/*	*command_count, */
-	/*	full_command */
-	/*); */
+	 fprintf(
+		stderr,
+		"%s: %d: %s: command not found\n",
+		program_name,
+		*command_count,
+		full_command
+	);
 	*status = EXIT_EXEC_FAILURE;
 }
 
