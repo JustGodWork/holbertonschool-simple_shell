@@ -17,12 +17,14 @@ char *clear_command(char *input)
  * @command: Command
  * @args: Arguments
  * @program_name: Program name
+ * @command_count: Command count
  * Return: Exit status
  */
 int execute(
 	char *command,
 	char **args,
-	char *program_name
+	char *program_name,
+	int *command_count
 )
 {
 	pid_t pid;
@@ -35,12 +37,14 @@ int execute(
 		{
 			fprintf(
 				stderr,
-				"%s: %s: command not found\n",
+				"%s: %d: %s: command not found\n",
 				program_name,
+				*command_count,
 				strtok(command, " ")
 			);
 			exit(EXIT_EXEC_FAILURE);
 		};
+		(*command_count)++;
 		exit(EXIT_SUCCESS);
 	}
 	else if (pid < 0)
