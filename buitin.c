@@ -21,7 +21,6 @@ int print_env(char **args, int status, char *input)
 {
 	int i = 0;
 
-	(void)args;
 	(void)status;
 	(void)input;
 
@@ -33,6 +32,7 @@ int print_env(char **args, int status, char *input)
 		printf("%s\n", environ[i]);
 		i++;
 	}
+	free_args(args);
 	return (1);
 }
 
