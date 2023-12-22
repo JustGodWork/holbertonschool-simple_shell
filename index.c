@@ -117,6 +117,8 @@ int main(__attribute__((unused)) int argc, char **argv)
 		args = split_args(full_command);
 		if (no_args(args, input, program_name))
 			break;
+		if (!args[0])
+			continue;
 		if (is_builtin(args, status, input))
 			continue;
 		if (!is_path(args[0]))

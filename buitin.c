@@ -25,6 +25,9 @@ int print_env(char **args, int status, char *input)
 	(void)status;
 	(void)input;
 
+	if (strlen(environ[i]) == 0)
+		return (1);
+
 	while (environ[i])
 	{
 		printf("%s\n", environ[i]);
@@ -48,6 +51,9 @@ int is_builtin(char **args, int status, char *input)
 		{"env", print_env},
 		{NULL, NULL}
 	};
+
+	if (!args)
+		return (0);
 
 	while (builtins[i].name)
 	{
