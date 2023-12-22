@@ -74,7 +74,7 @@ void invalid_command(
 	(void)full_command;
 	(void)program_name;
 	(void)command_count;
-	 fprintf(
+	fprintf(
 		stderr,
 		"%s: %d: %s: command not found\n",
 		program_name,
