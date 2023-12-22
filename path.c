@@ -79,5 +79,5 @@ char *scan_dir(char *command)
 	};
 	dinfo("scan_dir(): Clearing memory 1");
 	free(path_copy);
-	return (NULL);
+	return (command);
 }
