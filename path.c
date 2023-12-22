@@ -49,6 +49,8 @@ char *scan_dir(char *command)
 
 	if (!path)
 		return (NULL);
+	if (strcmp(path, "") == 0)
+		return (command);
 	path_copy = strdup(path);
 	dir = strtok(path_copy, ":");
 	dinfo("scan_dir(): dir: %s, command: %s", dir, command);
