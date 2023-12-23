@@ -1,0 +1,28 @@
+.TH SIMPLE_SHELL 1 "12/2023" "SIMPLE_SHELL MAN PAGE"
+.SH NAME
+simple_shell \- Simple version of classic shell
+.SH SYNOPSIS
+.B echo """COMMAND""" ./simple_shell
+.SH DESCRIPTION
+.PP
+This is a simple version of the classic shell. It can run commands with their arguments, and can also run the commands with their full path.
+.SH EXAMPLES
+.PP
+echo "ls -l" ./simple_shell
+.br
+This command will run the command ls -l in the shell.
+.PP
+echo "/bin/ls -l" ./simple_shell
+.br
+This command will execute file located at /bin and named ls with arg -l in the shell.
+.SH SEE ALSO
+.PP
+man sh
+.SH BUGS
+.PP
+In case of a bug, please contact the authors, or send an issue on our github page https://github.com/JustGodWork/holbertonschool-simple_shell/issues
+.SH AUTHORS
+.PP
+\fBElie Fétis\fP,
+\fBRuth Fonseca\fP,
+\fBCedric Chauderon\fP
